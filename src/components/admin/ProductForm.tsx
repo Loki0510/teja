@@ -1,8 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { CATEGORIES, type Product } from "@/lib/types";
+import { createBrowserSupabase } from "@/lib/supabase/client";
+
+const BUCKET = "product-images";
 
 export function ProductForm({
   product,
@@ -11,17 +14,56 @@ export function ProductForm({
   product?: Product;
   action: (formData: FormData) => void;
 }) {
-  const [existingImages, setExistingImages] = useState<string[]>(
-    product?.images ?? []
-  );
+  const [images, setImages] = useState<string[]>(product?.images ?? []);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFilesSelected = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+
+    setUploading(true);
+    setUploadError(null);
+    try {
+      const res = await fetch("/api/admin/upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          count: files.length,
+          extensions: files.map((f) => f.name.split(".").pop() || "jpg"),
+        }),
+      });
+      if (!res.ok) throw new Error("Could not prepare upload.");
+      const { uploads } = (await res.json()) as {
+        uploads: { path: string; token: string; publicUrl: string }[];
+      };
+
+      const supabase = createBrowserSupabase();
+      const uploadedUrls: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        const { path, token, publicUrl } = uploads[i];
+        const { error } = await supabase.storage
+          .from(BUCKET)
+          .uploadToSignedUrl(path, token, files[i]);
+        if (error) throw error;
+        uploadedUrls.push(publicUrl);
+      }
+
+      setImages((imgs) => [...imgs, ...uploadedUrls]);
+    } catch {
+      setUploadError("Some photos failed to upload. Please try again.");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
 
   return (
     <form action={action} className="space-y-5">
-      <input
-        type="hidden"
-        name="existingImages"
-        value={existingImages.join(",")}
-      />
+      <input type="hidden" name="images" value={images.join(",")} />
 
       <div>
         <label className="block text-sm mb-1 text-ink">Name</label>
@@ -115,11 +157,11 @@ export function ProductForm({
         </label>
       </div>
 
-      {existingImages.length > 0 && (
+      {images.length > 0 && (
         <div>
-          <p className="text-sm mb-2 text-ink">Current images</p>
+          <p className="text-sm mb-2 text-ink">Photos</p>
           <div className="flex gap-2 flex-wrap">
-            {existingImages.map((url) => (
+            {images.map((url) => (
               <div key={url} className="relative w-20 h-24">
                 <Image
                   src={url}
@@ -130,7 +172,7 @@ export function ProductForm({
                 <button
                   type="button"
                   onClick={() =>
-                    setExistingImages((imgs) => imgs.filter((u) => u !== url))
+                    setImages((imgs) => imgs.filter((u) => u !== url))
                   }
                   className="absolute -top-2 -right-2 w-5 h-5 bg-accent text-white rounded-full text-xs"
                   aria-label="Remove image"
@@ -146,17 +188,30 @@ export function ProductForm({
       <div>
         <label className="block text-sm mb-1 text-ink">Add photos</label>
         <input
+          ref={fileInputRef}
           type="file"
-          name="images"
           accept="image/*"
           multiple
+          onChange={handleFilesSelected}
+          disabled={uploading}
           className="w-full text-sm text-ink"
         />
+        <p className="mt-1 text-xs text-muted-light">
+          Photos upload straight to storage, so full-resolution files are
+          fine (up to Supabase&apos;s per-file limit, ~50MB by default).
+        </p>
+        {uploading && (
+          <p className="mt-1 text-xs text-accent">Uploading photos…</p>
+        )}
+        {uploadError && (
+          <p className="mt-1 text-xs text-red-600">{uploadError}</p>
+        )}
       </div>
 
       <button
         type="submit"
-        className="px-6 py-3 bg-accent text-white text-sm rounded-sm hover:bg-accent-dark transition-colors"
+        disabled={uploading}
+        className="px-6 py-3 bg-accent text-white text-sm rounded-sm hover:bg-accent-dark transition-colors disabled:opacity-50"
       >
         {product ? "Save Changes" : "Create Product"}
       </button>
