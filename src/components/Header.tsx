@@ -11,9 +11,9 @@ export function Header() {
   const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Rukshaa";
 
   return (
-    <header className="border-b border-black/10 sticky top-0 bg-white/90 backdrop-blur z-30">
+    <header className="border-b border-line sticky top-0 bg-cream/90 backdrop-blur z-30">
       <div className="mx-auto max-w-6xl px-4 flex items-center justify-between h-16">
-        <Link href="/" className="text-xl font-serif tracking-wide">
+        <Link href="/" className="text-xl font-serif tracking-wide text-accent-dark">
           {siteName}
         </Link>
 
@@ -22,7 +22,7 @@ export function Header() {
             <Link
               key={cat}
               href={`/category/${encodeURIComponent(cat)}`}
-              className="hover:opacity-60 transition-opacity"
+              className="hover:text-accent transition-colors"
             >
               {cat}
             </Link>
@@ -30,10 +30,10 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-4">
-          <Link href="/cart" className="relative text-sm">
+          <Link href="/cart" className="relative text-sm hover:text-accent transition-colors">
             Cart
             {count > 0 && (
-              <span className="absolute -top-2 -right-3 bg-black text-white rounded-full text-[10px] w-4 h-4 flex items-center justify-center">
+              <span className="absolute -top-2 -right-3 bg-accent text-white rounded-full text-[10px] w-4 h-4 flex items-center justify-center">
                 {count}
               </span>
             )}
@@ -49,7 +49,7 @@ export function Header() {
       </div>
 
       {open && (
-        <nav className="md:hidden border-t border-black/10 px-4 py-3 flex flex-col gap-3 text-sm">
+        <nav className="md:hidden border-t border-line px-4 py-3 flex flex-col gap-3 text-sm">
           {CATEGORIES.map((cat) => (
             <Link
               key={cat}

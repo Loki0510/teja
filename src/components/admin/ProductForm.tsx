@@ -24,28 +24,28 @@ export function ProductForm({
       />
 
       <div>
-        <label className="block text-sm mb-1">Name</label>
+        <label className="block text-sm mb-1 text-ink">Name</label>
         <input
           required
           name="name"
           defaultValue={product?.name}
-          className="w-full border border-black/20 rounded-sm px-3 py-2 text-sm"
+          className="w-full border border-line-strong rounded-sm px-3 py-2 text-sm"
         />
       </div>
 
       <div>
-        <label className="block text-sm mb-1">Description</label>
+        <label className="block text-sm mb-1 text-ink">Description</label>
         <textarea
           name="description"
           defaultValue={product?.description ?? ""}
           rows={4}
-          className="w-full border border-black/20 rounded-sm px-3 py-2 text-sm"
+          className="w-full border border-line-strong rounded-sm px-3 py-2 text-sm"
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4">
         <div>
-          <label className="block text-sm mb-1">Price (₹)</label>
+          <label className="block text-sm mb-1 text-ink">Price (₹)</label>
           <input
             required
             type="number"
@@ -53,16 +53,16 @@ export function ProductForm({
             min="0"
             name="price"
             defaultValue={product?.price}
-            className="w-full border border-black/20 rounded-sm px-3 py-2 text-sm"
+            className="w-full border border-line-strong rounded-sm px-3 py-2 text-sm"
           />
         </div>
         <div>
-          <label className="block text-sm mb-1">Category</label>
+          <label className="block text-sm mb-1 text-ink">Category</label>
           <select
             required
             name="category"
             defaultValue={product?.category ?? CATEGORIES[0]}
-            className="w-full border border-black/20 rounded-sm px-3 py-2 text-sm bg-white"
+            className="w-full border border-line-strong rounded-sm px-3 py-2 text-sm bg-surface text-ink"
           >
             {CATEGORIES.map((cat) => (
               <option key={cat} value={cat}>
@@ -74,13 +74,13 @@ export function ProductForm({
       </div>
 
       <div>
-        <label className="block text-sm mb-1">
+        <label className="block text-sm mb-1 text-ink">
           Sizes (comma separated, optional — e.g. S, M, L, XL)
         </label>
         <input
           name="sizes"
           defaultValue={product?.sizes?.join(", ") ?? ""}
-          className="w-full border border-black/20 rounded-sm px-3 py-2 text-sm"
+          className="w-full border border-line-strong rounded-sm px-3 py-2 text-sm"
         />
       </div>
 
@@ -91,14 +91,14 @@ export function ProductForm({
           name="in_stock"
           defaultChecked={product?.in_stock ?? true}
         />
-        <label htmlFor="in_stock" className="text-sm">
+        <label htmlFor="in_stock" className="text-sm text-ink">
           In stock
         </label>
       </div>
 
       {existingImages.length > 0 && (
         <div>
-          <p className="text-sm mb-2">Current images</p>
+          <p className="text-sm mb-2 text-ink">Current images</p>
           <div className="flex gap-2 flex-wrap">
             {existingImages.map((url) => (
               <div key={url} className="relative w-20 h-24">
@@ -113,7 +113,7 @@ export function ProductForm({
                   onClick={() =>
                     setExistingImages((imgs) => imgs.filter((u) => u !== url))
                   }
-                  className="absolute -top-2 -right-2 w-5 h-5 bg-black text-white rounded-full text-xs"
+                  className="absolute -top-2 -right-2 w-5 h-5 bg-accent text-white rounded-full text-xs"
                   aria-label="Remove image"
                 >
                   ×
@@ -125,19 +125,19 @@ export function ProductForm({
       )}
 
       <div>
-        <label className="block text-sm mb-1">Add photos</label>
+        <label className="block text-sm mb-1 text-ink">Add photos</label>
         <input
           type="file"
           name="images"
           accept="image/*"
           multiple
-          className="w-full text-sm"
+          className="w-full text-sm text-ink"
         />
       </div>
 
       <button
         type="submit"
-        className="px-6 py-3 bg-black text-white text-sm rounded-sm hover:bg-black/80 transition-colors"
+        className="px-6 py-3 bg-accent text-white text-sm rounded-sm hover:bg-accent-dark transition-colors"
       >
         {product ? "Save Changes" : "Create Product"}
       </button>

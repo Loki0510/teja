@@ -10,10 +10,10 @@ export default function CartPage() {
   if (items.length === 0) {
     return (
       <div className="mx-auto max-w-6xl px-4 py-24 text-center">
-        <p className="text-black/60">Your cart is empty.</p>
+        <p className="text-muted">Your cart is empty.</p>
         <Link
           href="/"
-          className="inline-block mt-6 px-6 py-3 bg-black text-white text-sm rounded-sm"
+          className="inline-block mt-6 px-6 py-3 bg-accent text-white text-sm rounded-sm hover:bg-accent-dark transition-colors"
         >
           Continue Shopping
         </Link>
@@ -23,15 +23,15 @@ export default function CartPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
-      <h1 className="text-2xl font-serif mb-8">Your Cart</h1>
+      <h1 className="text-2xl font-serif mb-8 text-ink">Your Cart</h1>
 
-      <div className="divide-y divide-black/10">
+      <div className="divide-y divide-line">
         {items.map((item) => (
           <div
             key={`${item.productId}-${item.size ?? "nosize"}`}
             className="flex gap-4 py-4"
           >
-            <div className="w-20 h-24 relative bg-black/5 rounded-sm overflow-hidden shrink-0">
+            <div className="w-20 h-24 relative bg-cream-dark rounded-sm overflow-hidden shrink-0">
               {item.image && (
                 <Image
                   src={item.image}
@@ -43,18 +43,18 @@ export default function CartPage() {
             </div>
 
             <div className="flex-1">
-              <p className="text-sm">{item.name}</p>
+              <p className="text-sm text-ink">{item.name}</p>
               {item.size && (
-                <p className="text-xs text-black/50 mt-0.5">
+                <p className="text-xs text-muted-light mt-0.5">
                   Size: {item.size}
                 </p>
               )}
-              <p className="text-sm text-black/60 mt-1">
+              <p className="text-sm text-accent mt-1">
                 ₹{item.price.toLocaleString("en-IN")}
               </p>
 
               <div className="mt-3 flex items-center gap-3">
-                <div className="flex items-center border border-black/20 rounded-sm">
+                <div className="flex items-center border border-line-strong rounded-sm text-ink">
                   <button
                     className="w-7 h-7 text-sm"
                     onClick={() =>
@@ -76,7 +76,7 @@ export default function CartPage() {
                   </button>
                 </div>
                 <button
-                  className="text-xs text-black/40 hover:text-black/70"
+                  className="text-xs text-muted-light hover:text-accent"
                   onClick={() => removeItem(item.productId, item.size)}
                 >
                   Remove
@@ -84,7 +84,7 @@ export default function CartPage() {
               </div>
             </div>
 
-            <p className="text-sm">
+            <p className="text-sm text-ink">
               ₹{(item.price * item.quantity).toLocaleString("en-IN")}
             </p>
           </div>
@@ -92,13 +92,15 @@ export default function CartPage() {
       </div>
 
       <div className="mt-8 flex justify-between items-center">
-        <p className="text-sm text-black/60">Total</p>
-        <p className="text-lg">₹{total.toLocaleString("en-IN")}</p>
+        <p className="text-sm text-muted">Total</p>
+        <p className="text-lg text-accent font-medium">
+          ₹{total.toLocaleString("en-IN")}
+        </p>
       </div>
 
       <Link
         href="/checkout"
-        className="mt-8 block text-center px-6 py-3 bg-black text-white text-sm rounded-sm hover:bg-black/80 transition-colors"
+        className="mt-8 block text-center px-6 py-3 bg-whatsapp text-white text-sm rounded-sm hover:bg-whatsapp-dark transition-colors"
       >
         Checkout via WhatsApp
       </Link>

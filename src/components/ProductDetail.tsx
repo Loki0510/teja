@@ -34,7 +34,7 @@ export function ProductDetail({ product }: { product: Product }) {
   return (
     <div className="grid md:grid-cols-2 gap-10">
       <div>
-        <div className="aspect-[3/4] bg-black/5 relative overflow-hidden rounded-sm">
+        <div className="aspect-[3/4] bg-cream-dark relative overflow-hidden rounded-sm">
           {image ? (
             <Image
               src={image}
@@ -45,7 +45,7 @@ export function ProductDetail({ product }: { product: Product }) {
               priority
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-black/30 text-sm">
+            <div className="w-full h-full flex items-center justify-center text-muted-light text-sm">
               No image
             </div>
           )}
@@ -57,7 +57,7 @@ export function ProductDetail({ product }: { product: Product }) {
                 key={img + i}
                 onClick={() => setActiveImage(i)}
                 className={`w-16 h-20 relative rounded-sm overflow-hidden border ${
-                  i === activeImage ? "border-black" : "border-black/10"
+                  i === activeImage ? "border-accent" : "border-line"
                 }`}
               >
                 <Image src={img} alt="" fill className="object-cover" />
@@ -68,23 +68,23 @@ export function ProductDetail({ product }: { product: Product }) {
       </div>
 
       <div>
-        <h1 className="text-2xl font-serif">{product.name}</h1>
-        <p className="mt-2 text-lg">
+        <h1 className="text-2xl font-serif text-ink">{product.name}</h1>
+        <p className="mt-2 text-xl text-accent font-medium">
           ₹{product.price.toLocaleString("en-IN")}
         </p>
-        <p className="mt-1 text-xs uppercase tracking-wide text-black/40">
+        <p className="mt-1 text-xs uppercase tracking-wide text-muted-light">
           {product.category}
         </p>
 
         {product.description && (
-          <p className="mt-6 text-sm text-black/70 whitespace-pre-line">
+          <p className="mt-6 text-sm text-muted whitespace-pre-line">
             {product.description}
           </p>
         )}
 
         {product.sizes && product.sizes.length > 0 && (
           <div className="mt-6">
-            <p className="text-sm mb-2">Size</p>
+            <p className="text-sm mb-2 text-ink">Size</p>
             <div className="flex gap-2">
               {product.sizes.map((s) => (
                 <button
@@ -92,8 +92,8 @@ export function ProductDetail({ product }: { product: Product }) {
                   onClick={() => setSize(s)}
                   className={`px-3 py-1.5 text-sm border rounded-sm ${
                     size === s
-                      ? "border-black bg-black text-white"
-                      : "border-black/20"
+                      ? "border-accent bg-accent text-white"
+                      : "border-line-strong text-ink"
                   }`}
                 >
                   {s}
@@ -104,8 +104,8 @@ export function ProductDetail({ product }: { product: Product }) {
         )}
 
         <div className="mt-6 flex items-center gap-3">
-          <p className="text-sm">Quantity</p>
-          <div className="flex items-center border border-black/20 rounded-sm">
+          <p className="text-sm text-ink">Quantity</p>
+          <div className="flex items-center border border-line-strong rounded-sm text-ink">
             <button
               className="w-8 h-8"
               onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -126,7 +126,7 @@ export function ProductDetail({ product }: { product: Product }) {
           <div className="mt-8 flex flex-col sm:flex-row gap-3">
             <button
               onClick={handleAdd}
-              className="px-6 py-3 bg-black text-white text-sm rounded-sm hover:bg-black/80 transition-colors"
+              className="px-6 py-3 bg-accent text-white text-sm rounded-sm hover:bg-accent-dark transition-colors"
             >
               {added ? "Added ✓" : "Add to Cart"}
             </button>
@@ -135,13 +135,13 @@ export function ProductDetail({ product }: { product: Product }) {
                 handleAdd();
                 router.push("/checkout");
               }}
-              className="px-6 py-3 border border-black text-sm rounded-sm hover:bg-black/5 transition-colors"
+              className="px-6 py-3 border border-accent text-accent text-sm rounded-sm hover:bg-accent-soft transition-colors"
             >
               Buy Now
             </button>
           </div>
         ) : (
-          <p className="mt-8 text-sm text-black/50">
+          <p className="mt-8 text-sm text-muted-light">
             Currently sold out. Message us on WhatsApp for restock updates.
           </p>
         )}

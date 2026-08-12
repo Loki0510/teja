@@ -33,16 +33,16 @@ export default function AdminLoginPage() {
 
   return (
     <div className="mx-auto max-w-sm px-4 py-24">
-      <h1 className="text-xl font-serif mb-6">Admin Login</h1>
+      <h1 className="text-xl font-serif mb-6 text-ink">Admin Login</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm mb-1">Password</label>
+          <label className="block text-sm mb-1 text-ink">Password</label>
           <input
             required
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-black/20 rounded-sm px-3 py-2 text-sm"
+            className="w-full border border-line-strong rounded-sm px-3 py-2 text-sm"
             autoFocus
           />
         </div>
@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="w-full px-6 py-3 bg-black text-white text-sm rounded-sm hover:bg-black/80 transition-colors disabled:opacity-50"
+          className="w-full px-6 py-3 bg-accent text-white text-sm rounded-sm hover:bg-accent-dark transition-colors disabled:opacity-50"
         >
           {loading ? "Signing in…" : "Sign In"}
         </button>

@@ -11,10 +11,10 @@ export default async function CategoryPage({
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12">
-      <h1 className="text-2xl font-serif mb-8">{category}</h1>
+      <h1 className="text-2xl font-serif mb-8 text-ink">{category}</h1>
 
       {products.length === 0 ? (
-        <p className="text-black/50 text-sm">
+        <p className="text-muted-light text-sm">
           No products in this category yet.
         </p>
       ) : (

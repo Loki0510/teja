@@ -7,7 +7,7 @@ export function ProductCard({ product }: { product: Product }) {
 
   return (
     <Link href={`/product/${product.id}`} className="group block">
-      <div className="aspect-[3/4] bg-black/5 relative overflow-hidden rounded-sm">
+      <div className="aspect-[3/4] bg-cream-dark relative overflow-hidden rounded-sm">
         {image ? (
           <Image
             src={image}
@@ -17,19 +17,21 @@ export function ProductCard({ product }: { product: Product }) {
             className="object-cover group-hover:scale-105 transition-transform duration-300"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-black/30 text-sm">
+          <div className="w-full h-full flex items-center justify-center text-muted-light text-sm">
             No image
           </div>
         )}
         {!product.in_stock && (
-          <span className="absolute top-2 left-2 bg-white/90 text-xs px-2 py-1 rounded-sm">
+          <span className="absolute top-2 left-2 bg-surface/90 text-ink text-xs px-2 py-1 rounded-sm">
             Sold out
           </span>
         )}
       </div>
       <div className="mt-3 space-y-1">
-        <p className="text-sm">{product.name}</p>
-        <p className="text-sm text-black/60">
+        <p className="text-sm text-ink group-hover:text-accent-dark transition-colors">
+          {product.name}
+        </p>
+        <p className="text-sm text-accent font-medium">
           ₹{product.price.toLocaleString("en-IN")}
         </p>
       </div>

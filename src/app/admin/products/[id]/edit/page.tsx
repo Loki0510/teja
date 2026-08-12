@@ -13,7 +13,7 @@ export default async function EditProductPage({
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
-      <h1 className="text-2xl font-serif mb-8">Edit Product</h1>
+      <h1 className="text-2xl font-serif mb-8 text-ink">Edit Product</h1>
       <ProductForm product={product} action={updateProduct.bind(null, id)} />
     </div>
   );
