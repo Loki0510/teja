@@ -17,16 +17,18 @@ function parseList(value: FormDataEntryValue | null): string[] {
 
 function buildProductFields(formData: FormData) {
   const compareAtRaw = String(formData.get("compare_at_price") || "").trim();
+  const videoUrl = String(formData.get("video_url") || "").trim();
   return {
     name: String(formData.get("name") || "").trim(),
     description: String(formData.get("description") || "").trim() || null,
     price: Number(formData.get("price")),
     compare_at_price: compareAtRaw ? Number(compareAtRaw) : null,
     category: String(formData.get("category") || "").trim(),
-    // Images are uploaded directly to Supabase Storage from the browser
-    // (see /api/admin/upload-url); this field just carries the resulting
-    // public URLs, already comma-separated by ProductForm.
+    // Images/video are uploaded directly to Supabase Storage from the
+    // browser (see /api/admin/upload-url); these fields just carry the
+    // resulting public URLs.
     images: parseList(formData.get("images")),
+    video_url: videoUrl || null,
     sizes: parseList(formData.get("sizes")),
     in_stock: formData.get("in_stock") === "on",
   };
@@ -70,16 +72,19 @@ export async function deleteProduct(id: string) {
 
   const { data: product } = await supabase
     .from("products")
-    .select("images")
+    .select("images, video_url")
     .eq("id", id)
     .maybeSingle();
 
   const { error } = await supabase.from("products").delete().eq("id", id);
   if (error) throw error;
 
-  if (product?.images?.length) {
-    const paths = product.images
-      .map((url: string) => url.split(`${BUCKET}/`)[1])
+  const mediaUrls = [...(product?.images ?? []), product?.video_url].filter(
+    (u): u is string => Boolean(u)
+  );
+  if (mediaUrls.length) {
+    const paths = mediaUrls
+      .map((url) => url.split(`${BUCKET}/`)[1])
       .filter(Boolean);
     if (paths.length) {
       await supabase.storage.from(BUCKET).remove(paths);

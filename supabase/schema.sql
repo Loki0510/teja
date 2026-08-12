@@ -18,6 +18,9 @@ create table if not exists products (
 -- the product is treated as on clearance/sale.
 alter table products add column if not exists compare_at_price numeric(10, 2);
 
+-- Optional single showcase video (same "product-images" storage bucket).
+alter table products add column if not exists video_url text;
+
 alter table products enable row level security;
 
 -- Anyone (including anonymous site visitors) can read products.

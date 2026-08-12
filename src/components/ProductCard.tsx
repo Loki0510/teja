@@ -33,6 +33,11 @@ export function ProductCard({ product }: { product: Product }) {
             -{discountPercent(product)}%
           </span>
         )}
+        {product.video_url && (
+          <span className="absolute top-2 right-2 w-6 h-6 rounded-full bg-black/50 text-white text-xs flex items-center justify-center">
+            ▶
+          </span>
+        )}
       </div>
       <div className="mt-3 space-y-1">
         <p className="text-sm text-ink group-hover:text-accent-dark transition-colors">

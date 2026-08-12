@@ -6,6 +6,7 @@ export type Product = {
   compare_at_price: number | null;
   category: string;
   images: string[];
+  video_url: string | null;
   sizes: string[] | null;
   in_stock: boolean;
   created_at: string;

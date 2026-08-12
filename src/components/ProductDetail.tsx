@@ -7,17 +7,27 @@ import type { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
 import { discountPercent, isOnSale } from "@/lib/pricing";
 
+type Slide = { type: "image" | "video"; url: string };
+
 export function ProductDetail({ product }: { product: Product }) {
   const { addItem } = useCart();
   const router = useRouter();
-  const [activeImage, setActiveImage] = useState(0);
+
+  const slides: Slide[] = [
+    ...product.images.map((url): Slide => ({ type: "image", url })),
+    ...(product.video_url
+      ? [{ type: "video", url: product.video_url } as Slide]
+      : []),
+  ];
+
+  const [activeSlide, setActiveSlide] = useState(0);
   const [size, setSize] = useState<string | null>(
     product.sizes && product.sizes.length > 0 ? product.sizes[0] : null
   );
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
 
-  const image = product.images[activeImage];
+  const current = slides[activeSlide];
   const onSale = isOnSale(product);
 
   const handleAdd = () => {
@@ -37,9 +47,15 @@ export function ProductDetail({ product }: { product: Product }) {
     <div className="grid md:grid-cols-2 gap-10">
       <div>
         <div className="aspect-[3/4] bg-cream-dark relative overflow-hidden rounded-sm">
-          {image ? (
+          {current?.type === "video" ? (
+            <video
+              src={current.url}
+              controls
+              className="w-full h-full object-cover"
+            />
+          ) : current ? (
             <Image
-              src={image}
+              src={current.url}
               alt={product.name}
               fill
               sizes="(min-width: 768px) 50vw, 100vw"
@@ -57,17 +73,31 @@ export function ProductDetail({ product }: { product: Product }) {
             {discountPercent(product)}% off
           </span>
         )}
-        {product.images.length > 1 && (
+        {slides.length > 1 && (
           <div className="mt-3 flex gap-2">
-            {product.images.map((img, i) => (
+            {slides.map((slide, i) => (
               <button
-                key={img + i}
-                onClick={() => setActiveImage(i)}
+                key={slide.url + i}
+                onClick={() => setActiveSlide(i)}
                 className={`w-16 h-20 relative rounded-sm overflow-hidden border ${
-                  i === activeImage ? "border-accent" : "border-line"
+                  i === activeSlide ? "border-accent" : "border-line"
                 }`}
               >
-                <Image src={img} alt="" fill className="object-cover" />
+                {slide.type === "video" ? (
+                  <>
+                    <video
+                      src={slide.url}
+                      muted
+                      preload="metadata"
+                      className="w-full h-full object-cover"
+                    />
+                    <span className="absolute inset-0 flex items-center justify-center bg-black/20 text-white text-xs">
+                      ▶
+                    </span>
+                  </>
+                ) : (
+                  <Image src={slide.url} alt="" fill className="object-cover" />
+                )}
               </button>
             ))}
           </div>

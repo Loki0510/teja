@@ -7,6 +7,33 @@ import { createBrowserSupabase } from "@/lib/supabase/client";
 
 const BUCKET = "product-images";
 
+async function uploadFiles(files: File[]): Promise<string[]> {
+  const res = await fetch("/api/admin/upload-url", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      count: files.length,
+      extensions: files.map((f) => f.name.split(".").pop() || "bin"),
+    }),
+  });
+  if (!res.ok) throw new Error("Could not prepare upload.");
+  const { uploads } = (await res.json()) as {
+    uploads: { path: string; token: string; publicUrl: string }[];
+  };
+
+  const supabase = createBrowserSupabase();
+  const urls: string[] = [];
+  for (let i = 0; i < files.length; i++) {
+    const { path, token, publicUrl } = uploads[i];
+    const { error } = await supabase.storage
+      .from(BUCKET)
+      .uploadToSignedUrl(path, token, files[i]);
+    if (error) throw error;
+    urls.push(publicUrl);
+  }
+  return urls;
+}
+
 export function ProductForm({
   product,
   action,
@@ -15,55 +42,59 @@ export function ProductForm({
   action: (formData: FormData) => void;
 }) {
   const [images, setImages] = useState<string[]>(product?.images ?? []);
-  const [uploading, setUploading] = useState(false);
+  const [video, setVideo] = useState<string | null>(
+    product?.video_url ?? null
+  );
+  const [uploadingImages, setUploadingImages] = useState(false);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const videoInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFilesSelected = async (
+  const handleImagesSelected = async (
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = Array.from(e.target.files ?? []);
     if (files.length === 0) return;
 
-    setUploading(true);
+    setUploadingImages(true);
     setUploadError(null);
     try {
-      const res = await fetch("/api/admin/upload-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          count: files.length,
-          extensions: files.map((f) => f.name.split(".").pop() || "jpg"),
-        }),
-      });
-      if (!res.ok) throw new Error("Could not prepare upload.");
-      const { uploads } = (await res.json()) as {
-        uploads: { path: string; token: string; publicUrl: string }[];
-      };
-
-      const supabase = createBrowserSupabase();
-      const uploadedUrls: string[] = [];
-      for (let i = 0; i < files.length; i++) {
-        const { path, token, publicUrl } = uploads[i];
-        const { error } = await supabase.storage
-          .from(BUCKET)
-          .uploadToSignedUrl(path, token, files[i]);
-        if (error) throw error;
-        uploadedUrls.push(publicUrl);
-      }
-
-      setImages((imgs) => [...imgs, ...uploadedUrls]);
+      const urls = await uploadFiles(files);
+      setImages((imgs) => [...imgs, ...urls]);
     } catch {
       setUploadError("Some photos failed to upload. Please try again.");
     } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
+      setUploadingImages(false);
+      if (imageInputRef.current) imageInputRef.current.value = "";
     }
   };
+
+  const handleVideoSelected = async (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingVideo(true);
+    setUploadError(null);
+    try {
+      const [url] = await uploadFiles([file]);
+      setVideo(url);
+    } catch {
+      setUploadError("The video failed to upload. Please try again.");
+    } finally {
+      setUploadingVideo(false);
+      if (videoInputRef.current) videoInputRef.current.value = "";
+    }
+  };
+
+  const uploading = uploadingImages || uploadingVideo;
 
   return (
     <form action={action} className="space-y-5">
       <input type="hidden" name="images" value={images.join(",")} />
+      <input type="hidden" name="video_url" value={video ?? ""} />
 
       <div>
         <label className="block text-sm mb-1 text-ink">Name</label>
@@ -188,11 +219,11 @@ export function ProductForm({
       <div>
         <label className="block text-sm mb-1 text-ink">Add photos</label>
         <input
-          ref={fileInputRef}
+          ref={imageInputRef}
           type="file"
           accept="image/*"
           multiple
-          onChange={handleFilesSelected}
+          onChange={handleImagesSelected}
           disabled={uploading}
           className="w-full text-sm text-ink"
         />
@@ -200,8 +231,46 @@ export function ProductForm({
           Photos upload straight to storage, so full-resolution files are
           fine (up to Supabase&apos;s per-file limit, ~50MB by default).
         </p>
-        {uploading && (
+        {uploadingImages && (
           <p className="mt-1 text-xs text-accent">Uploading photos…</p>
+        )}
+      </div>
+
+      {video && (
+        <div>
+          <p className="text-sm mb-2 text-ink">Video</p>
+          <div className="relative w-40">
+            <video src={video} className="w-40 rounded-sm" controls />
+            <button
+              type="button"
+              onClick={() => setVideo(null)}
+              className="absolute -top-2 -right-2 w-5 h-5 bg-accent text-white rounded-full text-xs"
+              aria-label="Remove video"
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      <div>
+        <label className="block text-sm mb-1 text-ink">
+          Add video (optional)
+        </label>
+        <input
+          ref={videoInputRef}
+          type="file"
+          accept="video/*"
+          onChange={handleVideoSelected}
+          disabled={uploading}
+          className="w-full text-sm text-ink"
+        />
+        <p className="mt-1 text-xs text-muted-light">
+          One short showcase video per product, up to ~50MB. Shown on the
+          product page alongside the photos.
+        </p>
+        {uploadingVideo && (
+          <p className="mt-1 text-xs text-accent">Uploading video…</p>
         )}
         {uploadError && (
           <p className="mt-1 text-xs text-red-600">{uploadError}</p>
