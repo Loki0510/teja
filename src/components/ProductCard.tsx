@@ -1,9 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/lib/types";
+import { discountPercent, isOnSale } from "@/lib/pricing";
 
 export function ProductCard({ product }: { product: Product }) {
   const image = product.images[0];
+  const onSale = isOnSale(product);
 
   return (
     <Link href={`/product/${product.id}`} className="group block">
@@ -26,13 +28,25 @@ export function ProductCard({ product }: { product: Product }) {
             Sold out
           </span>
         )}
+        {product.in_stock && onSale && (
+          <span className="absolute top-2 left-2 bg-accent text-white text-xs px-2 py-1 rounded-sm">
+            -{discountPercent(product)}%
+          </span>
+        )}
       </div>
       <div className="mt-3 space-y-1">
         <p className="text-sm text-ink group-hover:text-accent-dark transition-colors">
           {product.name}
         </p>
-        <p className="text-sm text-accent font-medium">
-          ₹{product.price.toLocaleString("en-IN")}
+        <p className="text-sm flex items-center gap-2">
+          <span className="text-accent font-medium">
+            ₹{product.price.toLocaleString("en-IN")}
+          </span>
+          {onSale && (
+            <span className="text-muted-light line-through text-xs">
+              ₹{product.compare_at_price!.toLocaleString("en-IN")}
+            </span>
+          )}
         </p>
       </div>
     </Link>

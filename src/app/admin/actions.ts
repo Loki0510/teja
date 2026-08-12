@@ -39,10 +39,12 @@ async function uploadNewImages(
 
 function buildProductFields(formData: FormData, newImageUrls: string[]) {
   const existingImages = parseList(formData.get("existingImages"));
+  const compareAtRaw = String(formData.get("compare_at_price") || "").trim();
   return {
     name: String(formData.get("name") || "").trim(),
     description: String(formData.get("description") || "").trim() || null,
     price: Number(formData.get("price")),
+    compare_at_price: compareAtRaw ? Number(compareAtRaw) : null,
     category: String(formData.get("category") || "").trim(),
     images: [...existingImages, ...newImageUrls],
     sizes: parseList(formData.get("sizes")),

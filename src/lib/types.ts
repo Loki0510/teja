@@ -3,6 +3,7 @@ export type Product = {
   name: string;
   description: string | null;
   price: number;
+  compare_at_price: number | null;
   category: string;
   images: string[];
   sizes: string[] | null;

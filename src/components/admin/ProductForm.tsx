@@ -57,20 +57,39 @@ export function ProductForm({
           />
         </div>
         <div>
-          <label className="block text-sm mb-1 text-ink">Category</label>
-          <select
-            required
-            name="category"
-            defaultValue={product?.category ?? CATEGORIES[0]}
-            className="w-full border border-line-strong rounded-sm px-3 py-2 text-sm bg-surface text-ink"
-          >
-            {CATEGORIES.map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
+          <label className="block text-sm mb-1 text-ink">
+            Original price (₹, optional)
+          </label>
+          <input
+            type="number"
+            step="0.01"
+            min="0"
+            name="compare_at_price"
+            defaultValue={product?.compare_at_price ?? ""}
+            placeholder="Leave blank if not on sale"
+            className="w-full border border-line-strong rounded-sm px-3 py-2 text-sm"
+          />
+          <p className="mt-1 text-xs text-muted-light">
+            Setting this higher than Price shows a strikethrough price and
+            lists the product on the Clearance page.
+          </p>
         </div>
+      </div>
+
+      <div>
+        <label className="block text-sm mb-1 text-ink">Category</label>
+        <select
+          required
+          name="category"
+          defaultValue={product?.category ?? CATEGORIES[0]}
+          className="w-full border border-line-strong rounded-sm px-3 py-2 text-sm bg-surface text-ink"
+        >
+          {CATEGORIES.map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

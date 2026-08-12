@@ -17,7 +17,10 @@ export function Header() {
           {siteName}
         </Link>
 
-        <nav className="hidden md:flex items-center gap-6 text-sm">
+        <nav className="hidden lg:flex items-center gap-5 text-sm">
+          <Link href="/new-arrivals" className="hover:text-accent transition-colors">
+            New Arrivals
+          </Link>
           {CATEGORIES.map((cat) => (
             <Link
               key={cat}
@@ -27,6 +30,9 @@ export function Header() {
               {cat}
             </Link>
           ))}
+          <Link href="/clearance" className="text-accent font-medium hover:text-accent-dark transition-colors">
+            Clearance
+          </Link>
         </nav>
 
         <div className="flex items-center gap-4">
@@ -39,7 +45,7 @@ export function Header() {
             )}
           </Link>
           <button
-            className="md:hidden text-sm"
+            className="lg:hidden text-sm"
             onClick={() => setOpen((v) => !v)}
             aria-label="Toggle menu"
           >
@@ -49,7 +55,10 @@ export function Header() {
       </div>
 
       {open && (
-        <nav className="md:hidden border-t border-line px-4 py-3 flex flex-col gap-3 text-sm">
+        <nav className="lg:hidden border-t border-line px-4 py-3 flex flex-col gap-3 text-sm">
+          <Link href="/new-arrivals" onClick={() => setOpen(false)}>
+            New Arrivals
+          </Link>
           {CATEGORIES.map((cat) => (
             <Link
               key={cat}
@@ -59,6 +68,13 @@ export function Header() {
               {cat}
             </Link>
           ))}
+          <Link
+            href="/clearance"
+            onClick={() => setOpen(false)}
+            className="text-accent font-medium"
+          >
+            Clearance
+          </Link>
         </nav>
       )}
     </header>

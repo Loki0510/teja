@@ -14,6 +14,10 @@ create table if not exists products (
   created_at timestamptz not null default now()
 );
 
+-- Original price before a discount. When set and higher than `price`,
+-- the product is treated as on clearance/sale.
+alter table products add column if not exists compare_at_price numeric(10, 2);
+
 alter table products enable row level security;
 
 -- Anyone (including anonymous site visitors) can read products.

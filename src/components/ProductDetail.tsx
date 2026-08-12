@@ -5,6 +5,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product } from "@/lib/types";
 import { useCart } from "@/lib/cart-context";
+import { discountPercent, isOnSale } from "@/lib/pricing";
 
 export function ProductDetail({ product }: { product: Product }) {
   const { addItem } = useCart();
@@ -17,6 +18,7 @@ export function ProductDetail({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
 
   const image = product.images[activeImage];
+  const onSale = isOnSale(product);
 
   const handleAdd = () => {
     addItem({
@@ -50,6 +52,11 @@ export function ProductDetail({ product }: { product: Product }) {
             </div>
           )}
         </div>
+        {product.in_stock && onSale && (
+          <span className="inline-block mt-3 bg-accent text-white text-xs px-2 py-1 rounded-sm">
+            {discountPercent(product)}% off
+          </span>
+        )}
         {product.images.length > 1 && (
           <div className="mt-3 flex gap-2">
             {product.images.map((img, i) => (
@@ -69,8 +76,15 @@ export function ProductDetail({ product }: { product: Product }) {
 
       <div>
         <h1 className="text-2xl font-serif text-ink">{product.name}</h1>
-        <p className="mt-2 text-xl text-accent font-medium">
-          ₹{product.price.toLocaleString("en-IN")}
+        <p className="mt-2 flex items-center gap-3">
+          <span className="text-xl text-accent font-medium">
+            ₹{product.price.toLocaleString("en-IN")}
+          </span>
+          {onSale && (
+            <span className="text-muted-light line-through">
+              ₹{product.compare_at_price!.toLocaleString("en-IN")}
+            </span>
+          )}
         </p>
         <p className="mt-1 text-xs uppercase tracking-wide text-muted-light">
           {product.category}

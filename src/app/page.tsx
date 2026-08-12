@@ -1,11 +1,17 @@
 import Link from "next/link";
 import { CATEGORIES } from "@/lib/types";
-import { getAllProducts, isSupabaseConfigured } from "@/lib/products";
+import {
+  getAllProducts,
+  getClearanceProducts,
+  isSupabaseConfigured,
+} from "@/lib/products";
 import { ProductCard } from "@/components/ProductCard";
 
 export default async function HomePage() {
   const configured = isSupabaseConfigured();
-  const products = configured ? await getAllProducts() : [];
+  const [products, clearanceProducts] = configured
+    ? await Promise.all([getAllProducts(), getClearanceProducts()])
+    : [[], []];
 
   return (
     <div>
@@ -48,9 +54,38 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {clearanceProducts.length > 0 && (
+        <section className="bg-accent-soft/50 py-12">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-lg font-serif text-ink">Clearance</h2>
+              <Link
+                href="/clearance"
+                className="text-sm text-accent hover:text-accent-dark transition-colors"
+              >
+                Shop all →
+              </Link>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {clearanceProducts.slice(0, 4).map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {products.length > 0 && (
-        <section className="mx-auto max-w-6xl px-4 pb-24">
-          <h2 className="text-lg font-serif mb-6 text-ink">New Arrivals</h2>
+        <section className="mx-auto max-w-6xl px-4 py-16">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-lg font-serif text-ink">New Arrivals</h2>
+            <Link
+              href="/new-arrivals"
+              className="text-sm text-accent hover:text-accent-dark transition-colors"
+            >
+              View all →
+            </Link>
+          </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
             {products.slice(0, 8).map((product) => (
               <ProductCard key={product.id} product={product} />
