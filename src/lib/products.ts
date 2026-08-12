@@ -41,7 +41,13 @@ export async function getClearanceProducts(): Promise<Product[]> {
     .select("*")
     .not("compare_at_price", "is", null)
     .order("created_at", { ascending: false });
-  if (error) throw error;
+  if (error) {
+    // Tolerate the compare_at_price migration not having been run yet
+    // (Postgres 42703 = undefined column) so the rest of the site still
+    // builds/renders instead of erroring the whole page.
+    if (error.code === "42703") return [];
+    throw error;
+  }
   // Belt-and-suspenders: only treat it as on sale if compare_at_price
   // actually exceeds price, in case of stale/bad data.
   return (data ?? []).filter(
